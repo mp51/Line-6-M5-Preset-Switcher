@@ -1,6 +1,8 @@
 # Line 6 M5 Preset Switcher
 MIDI commands preset switcher for Line 6 M5 on Arduino Pro Micro (Leonardo).
 
+![switcherdrawing](https://user-images.githubusercontent.com/15908138/39406359-f43e2472-4bb5-11e8-947d-f4c644077170.png)
+
 ## Switcher logic
 
 ### Preset switching
