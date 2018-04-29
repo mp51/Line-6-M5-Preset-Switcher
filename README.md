@@ -10,17 +10,6 @@ MIDI commands preset switcher for Line 6 M5 on Arduino Pro Micro (Leonardo).
   * Previous preset: Button 2 (DOWN)
 
 ### Bank switching:
-* Press both buttons:                **Bank 0** (presets 1 - 24)
-(default on startup) - Indication:   LED1 (Green), LED2 (Red), LED3 (Blue)
-                    
-* Hold Button 1 (UP) for 1 second:   **Bank 1** (presets 1 - 5)
-                    - Indication:   LED1 (Green)
-    
-* Hold Button 2 (DOWN) for 1 second: **Bank 2** (presets 5 - 10)
-                    - Indication:   LED2 (Red)
-
-* Hold both buttons for 1 second:    **Bank 3** (presets 11 - 15)
-                    - Indication:   LED3 (Blue)
 
 | Action         | Bank | Presets    | Indication  |
 | ----------- |----- | ---------- | ----------- |
