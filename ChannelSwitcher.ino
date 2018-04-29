@@ -1,5 +1,5 @@
 /*
-   Line6 M5 MIDI preset switcher v0.3
+   Line6 M5 MIDI preset switcher
 
    Preset switching:
    Next preset:     Button 1 (UP)
@@ -19,7 +19,7 @@
                         - Indication:   LED3 (Blue)
 
    --------------------------------------------------------------------------
-   Board: Arduino Pro Micro
+   Board: Arduino Pro Micro (Leonardo)
    Wiring:
     MIDI Out    -> Tx0
     Button Up   -> Pin 2
@@ -29,21 +29,26 @@
     LED3 (Blue) -> Pin 8
    -----------------------
 
-    Copyright (C) 2017 M.Pęczkowski
+    Written by Marcin Pęczkowski, 2018
 */
 
 #include "Preset.hpp"
 #include "misc.hpp"
 
-bool b1Flag = false;
-bool b2Flag = false;
-bool bothFlag = false;
+volatile bool button1_pressed = false;
+volatile bool button2_pressed = false;
 
-unsigned long timePressed1;
-unsigned long timePressed2;
-unsigned long timePressedBoth;
+volatile bool b1Flag = false;
+volatile bool b2Flag = false;
+volatile bool bothFlag = false;
 
-Preset preset; // preset object
+volatile unsigned long timePressed1 = 0;
+volatile unsigned long timePressed2 = 0;
+volatile unsigned long timePressedBoth = 0;
+volatile unsigned long button1_last_ms = 0;
+volatile unsigned long button2_last_ms = 0;
+
+Preset preset; // object for handling presets
 
 void setup() {
 
@@ -57,10 +62,10 @@ void setup() {
 #endif
 
   // Input buttons with pull-up resistors
-  pinMode(BUTTON_UP, INPUT);
+  pinMode(BUTTON_UP, INPUT_PULLUP);
   digitalWrite(BUTTON_UP, HIGH);
 
-  pinMode(BUTTON_DOWN, INPUT);
+  pinMode(BUTTON_DOWN, INPUT_PULLUP);
   digitalWrite(BUTTON_DOWN, HIGH);
 
   // LED outputs
@@ -68,78 +73,67 @@ void setup() {
   pinMode(LED2, OUTPUT);
   pinMode(LED3, OUTPUT);
 
+  // Light all LEDs
   set_leds(1, 1, 1);
 }
 
 void loop() {
+  button1_pressed = !digitalRead(BUTTON_UP);
+  button2_pressed = !digitalRead(BUTTON_DOWN);
 
   // Only button 1 (UP) pressed
-  if (!digitalRead(BUTTON_UP) && digitalRead(BUTTON_DOWN))
-  {
-    if (b1Flag == false)
-    {
+  if (button1_pressed && !button2_pressed) {
+    if ((b1Flag == false) && ((millis() - timePressed1) >= DEBOUNCE_DELAY_MS)) {
       b1Flag = true;
       timePressed1 = millis();
       preset.presetUp();
-    } else
-    {
+    } else {
       // Button 1 pressed for 1 second
-      if ((millis() - timePressed1) > 1000)
-      {
+      if ((millis() - timePressed1) > 1000) {
         // Presets bank 1: 0 - 4
         preset.setBank(1);
       }
     }
-  } else
-  {
-    if ((millis() - timePressed1) > DEBOUNCE_DELAY_MS)
-      b1Flag = false;
+  } else {
+    b1Flag = false;
+    timePressed1 = millis();
   }
 
   // Only button 2 (DOWN) pressed
-  if (!digitalRead(BUTTON_DOWN) && digitalRead(BUTTON_UP))
-  {
-    if (b2Flag == false)
-    {
+  if (button2_pressed && !button1_pressed) {
+    if (b2Flag == false && ((millis() - timePressed2) >= DEBOUNCE_DELAY_MS)) {
       b2Flag = true;
       timePressed2 = millis();
       preset.presetDown();
-    } else
-    {
+    } else {
       // Button 2 pressed for 1 second
-      if ((millis() - timePressed2) > 1000)
-      {
+      if ((millis() - timePressed2) > 1000) {
         // Presets bank 2: 6 - 10
         preset.setBank(2);
       }
     }
-  } else
-  {
-    if ((millis() - timePressed2) > DEBOUNCE_DELAY_MS)
-      b2Flag = false;
+  } else {
+    b2Flag = false;
+    timePressed2 = millis();
   }
 
   // Both buttons pressed
-  if (!digitalRead(BUTTON_UP) &&  !digitalRead(BUTTON_DOWN))
-  {
-    if (bothFlag == false)
-    {
+  if (button1_pressed &&  button2_pressed) {
+    if (bothFlag == false  && ((millis() - timePressedBoth) >= DEBOUNCE_DELAY_MS)) {
       bothFlag = true;
       timePressedBoth = millis();
       // Reset presets bank 0: 1 - 24
       preset.setBank(0);
-    } else
-    {
+    } else {
       // Both buttons pressed for 1 second
-      if ((millis() - timePressedBoth) > 1000)
-      {
+      if ((millis() - timePressedBoth) > 1000) {
         // Presets bank 3: 11 - 15
+        timePressedBoth = millis();
         preset.setBank(3);
       }
     }
-  } else
-  {
+  } else {
+    timePressedBoth = millis();
     bothFlag = false;
   }
-
 }

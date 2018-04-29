@@ -8,7 +8,7 @@
 // Defined pin numbers
 #define BUTTON_UP    2
 #define BUTTON_DOWN  3
-#define DEBOUNCE_DELAY_MS 200
+#define DEBOUNCE_DELAY_MS 80
 #define LED1 9
 #define LED2 7
 #define LED3 8
