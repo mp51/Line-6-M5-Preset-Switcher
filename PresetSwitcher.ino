@@ -45,8 +45,6 @@ volatile bool bothFlag = false;
 volatile unsigned long timePressed1 = 0;
 volatile unsigned long timePressed2 = 0;
 volatile unsigned long timePressedBoth = 0;
-volatile unsigned long button1_last_ms = 0;
-volatile unsigned long button2_last_ms = 0;
 
 Preset preset; // object for handling presets
 
