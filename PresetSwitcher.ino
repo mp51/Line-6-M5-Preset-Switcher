@@ -92,7 +92,7 @@ void loop() {
         preset.setBank(1);
       }
     }
-  } else {
+  } else if (b1Flag == true) { // Button released
     b1Flag = false;
     timePressed1 = millis();
   }
@@ -110,7 +110,7 @@ void loop() {
         preset.setBank(2);
       }
     }
-  } else {
+  } else if (b2Flag == true) { // Button released
     b2Flag = false;
     timePressed2 = millis();
   }
@@ -130,7 +130,7 @@ void loop() {
         preset.setBank(3);
       }
     }
-  } else {
+  } else if (bothFlag == true) { // Buttons released
     timePressedBoth = millis();
     bothFlag = false;
   }
